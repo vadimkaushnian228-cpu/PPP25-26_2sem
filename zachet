@@ -1,0 +1,87 @@
+import random
+import sys
+
+def get_difficulty():
+    """Выбор уровня сложности, возвращает (min_number, max_number, attempts)"""
+    print("\nВыберите уровень сложности:")
+    print("1 — Лёгкий (числа от 1 до 50, 10 попыток)")
+    print("2 — Средний (числа от 1 до 100, 7 попыток)")
+    print("3 — Сложный (числа от 1 до 200, 5 попыток)")
+    
+    while True:
+        choice = input("Ваш выбор (1/2/3): ").strip()
+        if choice == '1':
+            return 1, 50, 10
+        elif choice == '2':
+            return 1, 100, 7
+        elif choice == '3':
+            return 1, 200, 5
+        else:
+            print("Ошибка: введите 1, 2 или 3.")
+
+def play_round():
+    """Одна игровая сессия"""
+    min_num, max_num, max_attempts = get_difficulty()
+    secret = random.randint(min_num, max_num)
+    attempts_left = max_attempts
+    
+    print(f"\nИгра началась! Я загадал число от {min_num} до {max_num}.")
+    print(f"У вас {max_attempts} попыток. Удачи!")
+    
+    while attempts_left > 0:
+        print(f"\nОсталось попыток: {attempts_left}")
+        user_input = input("Введите число (или 'restart' для новой игры, 'exit' для выхода): ").strip().lower()
+        
+        if user_input == 'exit':
+            print("До свидания!")
+            sys.exit(0)
+        elif user_input == 'restart':
+            print("Перезапуск игры...")
+            return 'restart'
+        
+        try:
+            guess = int(user_input)
+        except ValueError:
+            print("Ошибка: введите целое число или команду (restart/exit).")
+            continue
+        
+        if guess < min_num or guess > max_num:
+            print(f"Число должно быть в диапазоне от {min_num} до {max_num}. Попробуйте снова.")
+            continue
+        
+        if guess == secret:
+            print(f"🎉 Поздравляю! Вы угадали число {secret} c {max_attempts - attempts_left + 1} попытки!")
+            return 'win'
+        elif guess < secret:
+            print("Загаданное число БОЛЬШЕ.")
+        else:
+            print("Загаданное число МЕНЬШЕ.")
+        
+        attempts_left -= 1
+  
+    print(f"\n💀 Вы проиграли! Загаданное число было {secret}.")
+    return 'lose'
+
+def main():
+    """Основной цикл игры"""
+    print("=" * 50)
+    print("   Добро пожаловать в игру 'Угадай число'!")
+    print("   Команды: число — попытка, restart — новая игра, exit — выход")
+    print("=" * 50)
+    
+    while True:
+        result = play_round()
+        if result == 'restart':
+            continue  
+        while True:
+            again = input("\nХотите сыграть ещё раз? (да/нет): ").strip().lower()
+            if again in ('да', 'yes', 'y', 'нет', 'no', 'n'):
+                break
+            print("Пожалуйста, ответьте 'да' или 'нет'.")
+        
+        if again in ('нет', 'no', 'n'):
+            print("Спасибо за игру! До встречи.")
+            break
+
+if __name__ == "__main__":
+    main()
